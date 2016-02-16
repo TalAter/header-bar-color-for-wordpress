@@ -2,6 +2,8 @@
 class Header_Bar_Color_WP {
   private static $initiated = false;
 
+  public static $defaultColor = '#dcdcdc';
+
   /**
    * initializes Header Bar Color for WordPress Plugin
    */
