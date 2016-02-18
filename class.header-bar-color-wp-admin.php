@@ -18,6 +18,7 @@ class Header_Bar_Color_WP_Admin {
   private static function init_hooks() {
     add_action('admin_menu', array('Header_Bar_Color_WP_Admin', 'add_menu'));
     add_action('admin_init', array('Header_Bar_Color_WP_Admin', 'settings_init'));
+    add_action('admin_enqueue_scripts', array('Header_Bar_Color_WP_Admin', 'enqueue_scripts'));
   }
 
   /**
@@ -73,7 +74,26 @@ class Header_Bar_Color_WP_Admin {
    */
   public static function display_input_color($args)
   {
-    echo '<input name="'.$args['setting_id'].'" type="color" value="'.get_option($args['setting_id']).'" placeholder="'.$args['placeholder'].'" />';
+    echo '
+    <input name="'.$args['setting_id'].'" type="color" value="'.get_option($args['setting_id']).'" placeholder="'.$args['placeholder'].'" />
+    <script>
+      jQuery(\'input[name="'.$args['setting_id'].'"]\').spectrum({
+        color: "'.get_option($args['setting_id']).'",
+        preferredFormat: "hex",
+        showInput: true,
+        flat: true,
+        showButtons: false
+      });
+    </script>
+    ';
+  }
+
+  public static function enqueue_scripts($hook) {
+    if (strpos($hook, 'hebacowp') !== false) {
+      wp_register_style('hebacowp_spectrum_css', 'https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css');
+      wp_enqueue_style('hebacowp_spectrum_css');
+      wp_enqueue_script('hebacowp_spectrum_script', 'https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js');
+    }
   }
 
   /**
@@ -85,6 +105,10 @@ class Header_Bar_Color_WP_Admin {
 
   public static function admin_page_settings() {
     self::view('admin_page_settings');
+  }
+
+  public static function getPublicFile($url) {
+    return plugins_url('public/'.$url, __FILE__);
   }
 
   /**
